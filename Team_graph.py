@@ -42,7 +42,7 @@ RECURSION_LIMIT = 25
 MAX_TOKENS = 40000  
 MAX_SECONDS = 60  
 
-# Email stays in dry-run mode until you set EMAIL_DRY_RUN=false in .env (Week 5 safety rule).
+# Email stays in dry-run mode until you set EMAIL_DRY_RUN=false under limits
 EMAIL_DRY_RUN = os.getenv("EMAIL_DRY_RUN", "true").lower() != "false"
 
 # 3 emails per hour Guide 6

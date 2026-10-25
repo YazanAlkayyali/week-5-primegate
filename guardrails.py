@@ -1,19 +1,6 @@
-# guardrails.py -- Week 5, Part 3 (Guardrails and Human in the Loop)
-#
-# Every block below is copied from the Week 5 companion guides.
-# The "Source:" comment names the guide and listing. Nothing is adapted.
-# This file has no imports from your own project, so it can be tested on its own.
-
 import re
 import unicodedata
 from email.utils import parseaddr
-
-
-# ---------------------------------------------------------------------------
-# Layer 1: input screening
-# Source: Guide 4 (Guardrails and Prompt Injection), Listing 1
-# Guide's own warning: this catches the obvious attack and misses paraphrases.
-# ---------------------------------------------------------------------------a
 
 INJECTION_PATTERNS = [
     r"ignore (all |any )?(previous|prior|above) (instructions|prompts?)",
@@ -29,10 +16,7 @@ def screen_text(text):
     return {"flagged": bool(hits), "matched": len(hits)}
 
 
-# ---------------------------------------------------------------------------
-# Layer 2: context hygiene
-# Source: Guide 4, Listing 2 - strip hidden content and report what was found
-# ---------------------------------------------------------------------------
+# hidden content and report what was found
 ZERO_WIDTH_CHARS = "\u200b\u200c\u200d\u2060\ufeff"
 ZERO_WIDTH = dict.fromkeys(map(ord, ZERO_WIDTH_CHARS), None)
 HTML_COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
@@ -48,8 +32,6 @@ def sanitize_document(text):
     return unicodedata.normalize("NFKC", cleaned), findings
 
 
-# Source: Guide 4, Listing 3 - mark retrieved text as untrusted data when building the prompt
-# (only wrap_untrusted is here; the guide's SYSTEM_PROMPT belongs with the Knowledge agent)
 def wrap_untrusted(chunks):
     parts = []
     for i, text in enumerate(chunks, 1):
@@ -57,12 +39,6 @@ def wrap_untrusted(chunks):
         parts.append(f'<untrusted_document id="{i}">\n{safe}\n</untrusted_document>')
     return "\n".join(parts)
 
-
-# ---------------------------------------------------------------------------
-# Layer 3: action guardrail - the email allow-list
-# Source: Guide 4, Listing 4 (naive_check, the guide's buggy example, is left out)
-# Replace "company.example" with the real domain(s) you want to allow.
-# ---------------------------------------------------------------------------
 COMPANY_DOMAINS = {"company.example","gmail.com",} # like .3du.jo
 
 
@@ -83,10 +59,6 @@ def check_email_action(recipients, allowed_domains=COMPANY_DOMAINS, max_recipien
     return {"allowed": True, "reason": "ok"}
 
 
-# ---------------------------------------------------------------------------
-# Layer 4: output guardrails
-# Source: Guide 4, Listing 5 - redaction, canary, and grounding checks
-# ---------------------------------------------------------------------------
 SECRET_PATTERNS = {
     "google_api_key": r"AIza[0-9A-Za-z_\-]{35}",
     "bearer_token": r"Bearer\s+[A-Za-z0-9._\-]{20,}",

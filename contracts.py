@@ -10,7 +10,7 @@ from pydantic import (
     field_validator,
     model_validator,
 )
-from typing_extensions import TypedDict  # Source: Guide 2, Section 4.1 (import TypedDict from typing_extensions)
+from typing_extensions import TypedDict  
 
 
 from langchain_groq import ChatGroq
@@ -112,7 +112,7 @@ def get_decision(question: str, max_attempts: int = 2) -> RoutingDecision:
         except ValidationError as exc:
             problem = summarize_validation_error(exc)
             prompt = f"{question}\nYour previous answer was invalid: {problem}. Try again."
-    raise RuntimeError("could not get a valid routing decision")  # the ceiling
+    raise RuntimeError("could not get a valid routing decision")  
 
 
 if __name__ == "__main__":
